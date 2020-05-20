@@ -3,14 +3,34 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  View,
   StatusBar,
-  Text,
+  Platform,
 } from 'react-native';
-import {WebView} from 'react-native-webview';
-import {Dimensions} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { WebView } from 'react-native-webview';
+import { Dimensions } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import analytics from '@react-native-firebase/analytics';
+
+const screenWidth = Dimensions.get('screen').width;
+const screenHeight = Dimensions.get('screen').height;
+
+let startTime;
 
 const App = () => {
+  const onWebViewLoadStart = () => {
+    startTime = new Date();
+  };
+
+  const onWebViewLoadEnd = () => {
+    const endTime = new Date();
+    var dif = endTime.getTime() - startTime.getTime();
+    analytics().logEvent('cart_webview_load_complete', {
+      duration: dif,
+      platform: Platform.OS,
+    });
+    startTime = null;
+  };
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -18,15 +38,16 @@ const App = () => {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <Text>Rohan</Text>
-          <WebView
-            source={{uri: 'https://walmart.ca'}}
-            style={{
-              marginTop: 20,
-              height: Dimensions.get('screen').height,
-              width: Dimensions.get('window').width,
-            }}
-          />
+          <View style={styles.WebViewContainer}>
+            <WebView
+              onLoadStart={onWebViewLoadStart}
+              source={{ uri: 'https://walmart.ca/cart' }}
+              style={[styles.WebView]}
+              cacheEnabled
+              automaticallyAdjustContentInsets={false}
+              onLoadEnd={onWebViewLoadEnd}
+            />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </>
@@ -36,6 +57,21 @@ const App = () => {
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
+  },
+  WebViewContainer: {
+    height: 5000,
+  },
+  halfBlur: {
+    opacity: 0.5,
+  },
+  clear: {
+    opacity: 1,
+  },
+  WebView: {},
+  loader: {
+    position: 'absolute',
+    top: screenHeight / 2,
+    left: screenWidth / 2,
   },
 });
 
