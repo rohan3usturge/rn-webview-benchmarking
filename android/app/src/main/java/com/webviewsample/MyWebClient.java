@@ -33,6 +33,6 @@ public class MyWebClient extends WebViewClient {
         Bundle bundle = new Bundle();
         String diff = Long.toString(interval.toDurationMillis());
         bundle.putString("duration", diff);
-        FirebaseAnalytics.getInstance(this.context).logEvent("cart_webview_android_load_complete", null);
+        FirebaseAnalytics.getInstance(this.context).logEvent("cart_webview_android_load_complete", bundle);
     }
 }

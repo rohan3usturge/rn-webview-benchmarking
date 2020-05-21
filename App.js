@@ -19,10 +19,15 @@ let startTime;
 
 const App = () => {
   const onWebViewLoadStart = () => {
+    console.log('start');
     startTime = new Date();
   };
 
   const onWebViewLoadEnd = () => {
+    if (!startTime) {
+      return;
+    }
+    console.log('end');
     const endTime = new Date();
     var dif = endTime.getTime() - startTime.getTime();
     analytics().logEvent('cart_webview_load_complete', {
